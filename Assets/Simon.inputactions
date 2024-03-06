@@ -1,0 +1,54 @@
+{
+    "name": "Simon",
+    "maps": [
+        {
+            "name": "Raycast",
+            "id": "49aa5c10-beb3-4b3d-b988-21bf7a8766a8",
+            "actions": [
+                {
+                    "name": "Click",
+                    "type": "Button",
+                    "id": "645184c6-0225-4f75-ab3a-e7313199d6db",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "MousePosition",
+                    "type": "Value",
+                    "id": "2f814faf-475f-47c4-8973-4cf6cd7ed139",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "e648bf35-e953-4baf-910f-c43fcc57ac8a",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fd9f7ada-96fc-4490-b3cc-ca4e860d20d6",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MousePosition",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
