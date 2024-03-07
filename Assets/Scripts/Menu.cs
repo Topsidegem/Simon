@@ -63,7 +63,7 @@ public class Menu : MonoBehaviour
 
     public void Perdiste()
     {
-        //Time.timeScale = 0;
+        Time.timeScale = 0;
         menuPerdedor.SetActive(true);
     }
 

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using TMPro;
 
 public class Randomizar : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class Randomizar : MonoBehaviour
     public int clickIndex = 0;
 
     private Menu menuScript;
+
+    public TextMeshProUGUI score;
 
     [SerializeField] GameObject[] buttons;
 
@@ -24,16 +27,11 @@ public class Randomizar : MonoBehaviour
         actions.Raycast.Click.performed += Ray;
 
         menuScript = GameObject.FindObjectOfType<Menu>();
-        if (menuScript == null)
-        {
-            Debug.LogError("No se pudo encontrar el script Menu en la escena.");
-        }
     }
 
     private void GenerateNumber()
     {
         sequence.Add(Random.Range(0, 4));
-        pActivate = true;
         clickIndex = 0;
 
         StartCoroutine(ShowSequence());
@@ -54,6 +52,7 @@ public class Randomizar : MonoBehaviour
                     sequence[clickIndex] == 3 && hit.transform.tag == "Azul")
                 {
                     clickIndex++;
+                    score.text = "Puntuacion: " + clickIndex.ToString();
                     if (clickIndex >= sequence.Count)
                     {
                         pActivate = false;
@@ -63,8 +62,6 @@ public class Randomizar : MonoBehaviour
                 else
                 {
                     menuScript.Perdiste();
-
-                    Debug.Log("¡Has perdido! Reiniciando el juego...");
                     ResetGame();
                 }
 
@@ -77,7 +74,6 @@ public class Randomizar : MonoBehaviour
     {
         foreach (int colorIndex in sequence)
         {
-            
             HighlightButton(colorIndex);
             yield return new WaitForSeconds(1f); 
             UnhighlightButton(colorIndex);
@@ -134,9 +130,32 @@ public class Randomizar : MonoBehaviour
 
     public void ResetGame()
     {
+        for (int i = 0; i < buttons.Length -1; i++)
+        {
+            if (i == 0 )
+            {
+                buttons[i].GetComponent<MeshRenderer>().material.color = Color.green;
+            }
+
+            if (i == 1)
+            {
+                buttons[i].GetComponent<MeshRenderer>().material.color = Color.red;
+            }
+
+            if (i == 2)
+            {
+                buttons[i].GetComponent<MeshRenderer>().material.color = Color.yellow;
+            }
+
+            if (i == 3)
+            {
+                buttons[i].GetComponent<MeshRenderer>().material.color = Color.blue;
+            }
+        }
         sequence.Clear();
         clickIndex = 0;
         pActivate = false;
+        StopAllCoroutines();
         GenerateNumber();
     }
 }
