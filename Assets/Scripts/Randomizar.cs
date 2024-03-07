@@ -6,31 +6,28 @@ using UnityEngine.InputSystem;
 public class Randomizar : MonoBehaviour
 {
     public List<int> sequence = new List<int>();
-    public float sequenceDelay = 1f;
-    public float buttonHighlightDuration = 0.5f;
     public bool pActivate = false;
     private Simon actions;
 
-    public int maxNumSec = 1;
     public int clickIndex = 0;
 
-    //public GameObject Verde;
-    //public GameObject Rojo;
-    //public GameObject Amarillo;
-    //public GameObject Azul;
+    private Menu menuScript;
 
-    private List<int> playerSequence = new List<int>();
-    private bool playerTurn = false;
+    [SerializeField] GameObject[] buttons;
 
-    private Material normal;
-    private Material resaltado;
-
+    Color originalColor;
     void Start()
     {
         GenerateNumber();
         actions = new Simon();
         actions.Enable();
         actions.Raycast.Click.performed += Ray;
+
+        menuScript = GameObject.FindObjectOfType<Menu>();
+        if (menuScript == null)
+        {
+            Debug.LogError("No se pudo encontrar el script Menu en la escena.");
+        }
     }
 
     private void GenerateNumber()
@@ -38,6 +35,8 @@ public class Randomizar : MonoBehaviour
         sequence.Add(Random.Range(0, 4));
         pActivate = true;
         clickIndex = 0;
+
+        StartCoroutine(ShowSequence());
     }
 
     private void Ray(InputAction.CallbackContext ctx)
@@ -49,72 +48,95 @@ public class Randomizar : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit))
             {
-                if(sequence[clickIndex] == 0 && hit.transform.tag == "Verde" ||
+                if (sequence[clickIndex] == 0 && hit.transform.tag == "Verde" ||
                     sequence[clickIndex] == 1 && hit.transform.tag == "Rojo" ||
-                    sequence[clickIndex] == 2 && hit.transform.tag == "Amarillo"||
+                    sequence[clickIndex] == 2 && hit.transform.tag == "Amarillo" ||
                     sequence[clickIndex] == 3 && hit.transform.tag == "Azul")
                 {
-                    if(clickIndex >= sequence.Count)
+                    clickIndex++;
+                    if (clickIndex >= sequence.Count)
                     {
                         pActivate = false;
                         GenerateNumber();
                     }
-                    else
-                    {
-                        clickIndex ++;
-                    }
                 }
                 else
                 {
-                    //reiniciar el arreglo
-                    //desactivar al jugador
-                    //mandar mensaje de perdiste
-                    // menu
+                    menuScript.Perdiste();
+
+                    Debug.Log("¡Has perdido! Reiniciando el juego...");
+                    ResetGame();
                 }
 
             }
         }
-       
+
     }
 
     IEnumerator ShowSequence()
     {
         foreach (int colorIndex in sequence)
         {
+            
             HighlightButton(colorIndex);
-            yield return new WaitForSeconds(buttonHighlightDuration);
+            yield return new WaitForSeconds(1f); 
             UnhighlightButton(colorIndex);
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.5f); 
         }
+        pActivate = true; 
     }
 
     void HighlightButton(int index)
     {
-        if (normal == null)
-        {
-            normal = GetComponent<Renderer>().material;
-        }
+        Renderer buttonRenderer = GetButtonRenderer(index);
 
+        originalColor = buttons[index].GetComponent<MeshRenderer>().material.color;
+        
+        buttonRenderer.material.color = Color.magenta;
 
-        GetComponent<Renderer>().material = resaltado;
         Debug.Log("Iluminar botón " + index);
     }
 
     void UnhighlightButton(int index)
     {
-        if (normal != null)
-        {
-            GetComponent<Renderer>().material = normal;
-        }
+        Renderer buttonRenderer = GetButtonRenderer(index);
+
+        buttons[index].GetComponent<MeshRenderer>().material.color = originalColor;
+
+        buttonRenderer.material.color = originalColor;
+
         Debug.Log("Apagar botón " + index);
     }
 
-
-    public void RegisterButtonPress(int buttonIndex)
+    Renderer GetButtonRenderer(int index)
     {
-        if (playerTurn)
+        
+        if (index >= 0 && index < buttons.Length)
         {
-            playerSequence.Add(buttonIndex);
+            
+            Renderer buttonRenderer = buttons[index].GetComponent<Renderer>();
+            if (buttonRenderer != null)
+            {
+                return buttonRenderer;
+            }
+            else
+            {
+                Debug.LogError("El botón en el índice " + index + " no tiene un componente Renderer.");
+                return null;
+            }
         }
+        else
+        {
+            Debug.LogError("El índice está fuera del rango de botones.");
+            return null;
+        }
+    }
+
+    public void ResetGame()
+    {
+        sequence.Clear();
+        clickIndex = 0;
+        pActivate = false;
+        GenerateNumber();
     }
 }
